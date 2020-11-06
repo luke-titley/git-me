@@ -21,17 +21,17 @@ pub enum Task {
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
-/// First subcommand.
+/// start
 #[argh(subcommand, name = "start")]
 pub struct Start {
     #[argh(option)]
-    /// start a new feature
+    /// name of the new feature/hotfix
     pub name: std::string::String,
 }
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
-/// First subcommand.
+/// review
 #[argh(subcommand, name = "review")]
 pub struct Review {
     #[argh(option)]
@@ -41,35 +41,63 @@ pub struct Review {
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
-/// First subcommand.
+/// finish
 #[argh(subcommand, name = "finish")]
 pub struct Finish {}
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
+/// enter
+#[argh(subcommand, name = "enter")]
+pub struct Enter {}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+/// exit
+#[argh(subcommand, name = "exit")]
+pub struct Exit {}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+/// switch
+#[argh(subcommand, name = "switch")]
+pub struct Switch {}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+/// list
+#[argh(subcommand, name = "list")]
+pub struct List {}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
 #[argh(subcommand)]
-pub enum Stage {
+pub enum Status {
     Start(Start),
     Review(Review),
     Finish(Finish),
+    Enter(Enter),
+    Exit(Exit),
+    Switch(Switch),
+    List(List)
 }
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
-/// First subcommand.
+/// Working with feature
 #[argh(subcommand, name = "feature")]
 pub struct Feature {
     #[argh(subcommand)]
-    /// start a new feature
-    pub stage: Stage,
+    /// the stage in the feature
+    pub status: Status,
 }
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
-/// First subcommand.
+/// Working with hotfix
 #[argh(subcommand, name = "hotfix")]
 pub struct Hotfix {
     #[argh(subcommand)]
-    /// start a new hotfix
-    pub stage: Stage,
+    /// the stage in the feature
+    pub status: Status,
 }

@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------
 mod args;
 
-use args::{Tasks, Task, Feature, Hotfix, Start, Stage};
+use args::{Tasks, Task, Feature, Hotfix, Start, Status};
 
 //------------------------------------------------------------------------------
 fn main() {
@@ -12,12 +12,12 @@ fn main() {
 
     match tasks.task {
         Task::Feature(Feature {
-            stage: Stage::Start(Start { name }),
+            status: Status::Start(Start { name }),
         }) => {
             println!("start feature/{}", name);
         },
         Task::Hotfix(Hotfix {
-            stage: Stage::Start(Start { name }),
+            status: Status::Start(Start { name }),
         }) => {
             println!("start feature/{}", name);
         }
