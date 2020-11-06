@@ -2,8 +2,9 @@
 // from+git_me@luketitley.com
 //------------------------------------------------------------------------------
 mod args;
+mod tasks;
 
-use args::{Tasks, Task, Feature, Hotfix, Start, Status};
+use args::{Feature, Hotfix, Start, Status, Task, Tasks};
 
 //------------------------------------------------------------------------------
 fn main() {
@@ -11,11 +12,12 @@ fn main() {
     let tasks: Tasks = argh::from_env();
 
     match tasks.task {
+        // Feature
         Task::Feature(Feature {
             status: Status::Start(Start { name }),
         }) => {
             println!("start feature/{}", name);
-        },
+        }
         Task::Hotfix(Hotfix {
             status: Status::Start(Start { name }),
         }) => {

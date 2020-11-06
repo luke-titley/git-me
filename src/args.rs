@@ -80,7 +80,7 @@ pub enum Status {
     Enter(Enter),
     Exit(Exit),
     Switch(Switch),
-    List(List)
+    List(List),
 }
 
 //------------------------------------------------------------------------------
