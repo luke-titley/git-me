@@ -4,7 +4,7 @@
 mod args;
 mod tasks;
 
-use args::{Feature, Hotfix, Start, Status, Task, Tasks};
+use args::*;
 
 //------------------------------------------------------------------------------
 fn main() {
@@ -21,7 +21,16 @@ fn main() {
         Task::Hotfix(Hotfix {
             status: Status::Start(Start { name }),
         }) => {
-            println!("start feature/{}", name);
+            println!("start hotfix/{}", name);
+        }
+        Task::Release(Release{ branch : Branch::Master(Master{}) }) => {
+            println!("Release patch");
+        }
+        Task::Release(Release{ branch : Branch::Develop(Develop{}) }) => {
+            println!("Release minor");
+        }
+        Task::Setup(Setup { server, token }) => {
+            println!("setup");
         }
         _ => (),
     }

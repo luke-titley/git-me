@@ -18,6 +18,7 @@ pub enum Task {
     Feature(Feature),
     Hotfix(Hotfix),
     Release(Release),
+    Setup(Setup),
 }
 
 //------------------------------------------------------------------------------
@@ -39,6 +40,12 @@ pub struct Review {
     /// start a new feature
     pub reviewer: std::string::String,
 }
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+/// rebase
+#[argh(subcommand, name = "rebase")]
+pub struct Rebase {}
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
@@ -77,6 +84,7 @@ pub enum Status {
     Start(Start),
     Review(Review),
     Finish(Finish),
+    Rebase(Rebase),
     Enter(Enter),
     Exit(Exit),
     Switch(Switch),
@@ -131,4 +139,17 @@ pub struct Release {
     #[argh(subcommand)]
     /// the operation to perform
     pub branch: Branch,
+}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+/// The initial setup of git-me
+#[argh(subcommand, name = "setup")]
+pub struct Setup {
+    #[argh(option)]
+    /// the gitlab server
+    pub server: std::string::String,
+    #[argh(option)]
+    /// api token
+    pub token: std::string::String,
 }
