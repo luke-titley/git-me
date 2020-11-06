@@ -12,11 +12,16 @@ fn main() {
 
     match tasks.task {
         // Feature
-        Task::Feature(Feature {
-            status: Status::Start(Start { name }),
-        }) => {
-            println!("start feature/{}", name);
-        }
+        Task::Feature(Feature { status }) => match status {
+            Status::Start(Start { name }) => tasks::feature::start(&name),
+            Status::Review(Review { reviewer }) => tasks::feature::review(&reviewer),
+            Status::Finish(Finish {}) => tasks::feature::finish(),
+            Status::Rebase(Rebase {}) => tasks::feature::rebase(),
+            Status::Enter(Enter {}) => tasks::feature::enter(),
+            Status::Exit(Exit {}) => tasks::feature::exit(),
+            Status::Switch(Switch {}) => tasks::feature::switch(),
+            Status::List(List {}) => tasks::feature::list(),
+        },
         Task::Hotfix(Hotfix {
             status: Status::Start(Start { name }),
         }) => {
