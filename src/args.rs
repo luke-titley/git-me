@@ -17,6 +17,7 @@ pub struct Tasks {
 pub enum Task {
     Feature(Feature),
     Hotfix(Hotfix),
+    Release(Release),
 }
 
 //------------------------------------------------------------------------------
@@ -100,4 +101,34 @@ pub struct Hotfix {
     #[argh(subcommand)]
     /// the stage in the feature
     pub status: Status,
+}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+/// develop
+#[argh(subcommand, name = "develop")]
+pub struct Develop {}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+/// develop
+#[argh(subcommand, name = "master")]
+pub struct Master {}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+#[argh(subcommand)]
+pub enum Branch {
+    Master(Master),
+    Develop(Develop),
+}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+/// Working with master branch
+#[argh(subcommand, name = "release")]
+pub struct Release {
+    #[argh(subcommand)]
+    /// the operation to perform
+    pub branch: Branch,
 }
