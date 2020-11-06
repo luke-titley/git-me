@@ -33,7 +33,7 @@ fn main() {
             println!("Release minor");
         }
         Task::Setup(Setup { server, token }) => {
-            println!("setup");
+            println!("setup {} {}", server, token);
         }
         _ => (),
     }
