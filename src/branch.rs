@@ -38,6 +38,15 @@ pub fn branch(type_: Type, name: &str) {
     let commit = repo
         .find_commit(develop_oid)
         .expect("Unable to find head commit");
-    repo.branch(&name, &commit, false)
+    let branch = repo
+        .branch(&name, &commit, false)
         .expect("Unable to create branch");
+
+    repo.set_head(
+        branch
+            .get()
+            .name()
+            .expect("Unable to get the refname for new branch"),
+    )
+    .expect("Unable to set HEAD to point to new branch");
 }
