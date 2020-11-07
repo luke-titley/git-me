@@ -59,21 +59,20 @@ pub fn branch(type_: Type, name: &str) {
         .expect("Unable to add changelog to index");
 
     let index_oid = index.write_tree().expect("Unable to write index");
+
     let tree = repo
         .find_tree(index_oid)
         .expect("Unable to find tree for new index");
 
-    let parent_commit = repo
-        .find_commit(develop_oid)
-        .expect(&format!("Unable to find commit for base branch {}", base));
     repo.commit(
         Some("HEAD"),
         &repo.signature().expect("Unable to obtain signature"),
         &repo.signature().expect("Unable to obtain signature"),
         &format!("[start] {}", branch_name),
         &tree,
-        &[&parent_commit],
+        &[&commit],
     )
     .expect("Unable to make initial commit");
-    index.clear().expect("Unable to clear the index");
+
+    repo.checkout_head(None).expect("Reset everything to head");
 }
