@@ -6,7 +6,9 @@
 pub fn start(name: &str) {
     let repo =
         git2::Repository::discover("./").expect("Unable to find git repo");
-    let head_oid = repo.refname_to_id("HEAD").expect("Unable to find refname");
+    let head_oid = repo
+        .refname_to_id("develop")
+        .expect("Unable to find refname");
     let commit = repo
         .find_commit(head_oid)
         .expect("Unable to find head commit");
