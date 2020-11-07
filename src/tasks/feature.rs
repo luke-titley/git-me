@@ -2,12 +2,10 @@
 // from+git_me@luketitley.com
 //------------------------------------------------------------------------------
 use crate::branch;
-use crate::changelog;
 
 //------------------------------------------------------------------------------
 pub fn start(name: &str) {
     branch::branch(branch::Type::Feature, name);
-    changelog::create_stub(name);
 }
 
 //------------------------------------------------------------------------------
