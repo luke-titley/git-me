@@ -52,8 +52,8 @@ pub fn branch(type_: Type, name: &str) {
     )
     .expect("Unable to set HEAD to point to new branch");
 
-    let mut index = repo.index().expect("Unable to create index for changelog");
     let changelog = changelog::create_stub(name);
+    let mut index = repo.index().expect("Unable to create index for changelog");
     index
         .add_path(changelog.as_path())
         .expect("Unable to add changelog to index");
@@ -75,4 +75,5 @@ pub fn branch(type_: Type, name: &str) {
         &[&parent_commit],
     )
     .expect("Unable to make initial commit");
+    index.clear().expect("Unable to clear the index");
 }
