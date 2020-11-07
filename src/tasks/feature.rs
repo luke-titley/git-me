@@ -4,8 +4,8 @@
 
 //------------------------------------------------------------------------------
 pub fn start(name: &str) {
-    println!("start feature/{}", name);
-    let repo = git2::Repository::discover("./").expect("Unable to find git repo");
+    let repo =
+        git2::Repository::discover("./").expect("Unable to find git repo");
     let head_oid = repo.refname_to_id("HEAD").expect("Unable to find refname");
     let commit = repo
         .find_commit(head_oid)

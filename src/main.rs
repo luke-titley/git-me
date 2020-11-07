@@ -14,7 +14,9 @@ fn main() {
         // Feature
         Task::Feature(Feature { status }) => match status {
             Status::Start(Start { name }) => tasks::feature::start(&name),
-            Status::Review(Review { reviewer }) => tasks::feature::review(&reviewer),
+            Status::Review(Review { reviewer }) => {
+                tasks::feature::review(&reviewer)
+            }
             Status::Finish(Finish {}) => tasks::feature::finish(),
             Status::Rebase(Rebase {}) => tasks::feature::rebase(),
             Status::Enter(Enter {}) => tasks::feature::enter(),
