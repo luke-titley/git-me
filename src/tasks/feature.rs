@@ -1,22 +1,13 @@
 //------------------------------------------------------------------------------
 // from+git_me@luketitley.com
 //------------------------------------------------------------------------------
+use crate::branch;
+use crate::changelog;
 
 //------------------------------------------------------------------------------
 pub fn start(name: &str) {
-    let repo =
-        git2::Repository::discover("./").expect("Unable to find git repo");
-    let develop_oid = repo
-        .find_branch("develop", git2::BranchType::Local)
-        .expect("Unable to find refname")
-        .get()
-        .target()
-        .expect("Unable to find reference target");
-    let commit = repo
-        .find_commit(develop_oid)
-        .expect("Unable to find head commit");
-    repo.branch(&format!("feature/{}", name), &commit, false)
-        .expect("Unable to create branch");
+    branch::branch(branch::Type::Feature, name);
+    changelog::create_stub(name);
 }
 
 //------------------------------------------------------------------------------

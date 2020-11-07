@@ -2,6 +2,8 @@
 // from+git_me@luketitley.com
 //------------------------------------------------------------------------------
 mod args;
+mod branch;
+mod changelog;
 mod tasks;
 
 use args::*;
