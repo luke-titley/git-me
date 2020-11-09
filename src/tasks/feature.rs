@@ -12,7 +12,10 @@ pub fn start(name: &str) {
 //------------------------------------------------------------------------------
 pub fn review(reviewer: &str) {
     println!("review feature by {}", reviewer);
-    server::connect();
+    let remote_url = branch::find_remote();
+    let server = server::Server::new();
+
+    let project = server.project(&remote_url);
 }
 
 //------------------------------------------------------------------------------

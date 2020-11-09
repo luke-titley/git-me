@@ -76,3 +76,16 @@ pub fn branch(type_: Type, name: &str) {
 
     repo.checkout_head(None).expect("Reset everything to head");
 }
+
+pub fn find_remote() -> std::string::String {
+    let repo =
+        git2::Repository::discover("./").expect("Unable to find git repo");
+    let remote = repo
+        .find_remote("origin")
+        .expect("Unable to find remote repo");
+
+    remote
+        .url()
+        .expect("remote url is not valid utf8")
+        .to_string()
+}
