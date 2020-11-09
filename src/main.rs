@@ -47,7 +47,7 @@ fn main() {
             server,
             private_token,
         }) => {
-            println!("setup {} {}", server, private_token);
+            tasks::setup::setup(&server, &private_token);
         }
         Task::Info(Info {}) => {
             tasks::setup::info();

@@ -17,12 +17,11 @@ pub fn setup(server: &str, token: &str) {
 pub fn info() {
     let config = config::Config::open();
     let server_status =
-        match gitlab::Gitlab::new(config.server, config.private_token) {
-            Ok(_) => "ok",
-            Err(error) => format!("{}", error),
+        match gitlab::Gitlab::new(&config.server, &config.private_token) {
+            Ok(_) => "Contactable".to_string(),
+            Err(error) => format!("{}", &error),
         };
 
-    println!("config");
     println!("{:?}", &config);
-    println!("server: {}", server_status);
+    println!("Server: {}", server_status);
 }
