@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------
 // from+git_me@luketitley.com
 //------------------------------------------------------------------------------
+use std::os::unix::fs::PermissionsExt;
 
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Config {
@@ -32,11 +33,19 @@ impl Config {
     }
 
     pub fn save(&self) {
-        serde_yaml::to_writer(
-            std::fs::File::create(&Self::file_path())
-                .expect("Unable to create config file"),
-            self,
-        )
-        .expect("Unable to write the config to disk");
+        let config_file = std::fs::File::create(&Self::file_path())
+            .expect("Unable to create config file");
+
+        let metadata = config_file
+            .metadata()
+            .expect("Unable to obtain meta data for config");
+        let mut permissions = metadata.permissions();
+        permissions.set_mode(0o600);
+        config_file
+            .set_permissions(permissions)
+            .expect("Unable to set permissions on config file");
+
+        serde_yaml::to_writer(config_file, self)
+            .expect("Unable to write the config to disk");
     }
 }
