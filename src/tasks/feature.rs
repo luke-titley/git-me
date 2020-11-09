@@ -6,7 +6,11 @@ use crate::server;
 
 //------------------------------------------------------------------------------
 pub fn start(name: &str) {
+    // Make the new branch
     branch::branch(branch::Type::Feature, name);
+
+    // Push the new branch
+    branch::push(branch::Type::Feature, name);
 }
 
 //------------------------------------------------------------------------------

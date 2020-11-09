@@ -77,6 +77,37 @@ pub fn branch(type_: Type, name: &str) {
     repo.checkout_head(None).expect("Reset everything to head");
 }
 
+//------------------------------------------------------------------------------
+pub fn push(type_: Type, name: &str) {
+    let branch_name = resolve(type_, name);
+    let repo =
+        git2::Repository::discover("./").expect("Unable to find git repo");
+    let mut remote = repo
+        .find_remote("origin")
+        .expect("Unable to find remote repo");
+
+    let mut callbacks = git2::RemoteCallbacks::new();
+    callbacks.credentials(|_url, username_from_url, _allowed_types| {
+        git2::Cred::ssh_key(
+            username_from_url.unwrap(),
+            None,
+            std::path::Path::new(&format!(
+                "{}/.ssh/id_rsa",
+                std::env::var("HOME").unwrap()
+            )),
+            None,
+        )
+    });
+
+    let ref_spec = format!("refs/heads/{0}:refs/heads/{0}", branch_name);
+    remote
+        .push(
+            &[&ref_spec],
+            Some(git2::PushOptions::new().remote_callbacks(callbacks)),
+        )
+        .expect("Failed to push");
+}
+
 pub fn find_remote() -> std::string::String {
     let repo =
         git2::Repository::discover("./").expect("Unable to find git repo");
