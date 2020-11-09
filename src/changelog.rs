@@ -6,16 +6,16 @@ const ARTIST_DESCR: &'static str = "For artists";
 const TECHNICAL_DESCR: &'static str = "For developers";
 
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
-struct Changelog<'a> {
-    pub artists: &'a str,
-    pub technical: &'a str,
+struct Changelog {
+    pub artists: std::string::String,
+    pub technical: std::string::String,
 }
 
-impl<'a> Changelog<'a> {
+impl Changelog {
     pub fn new() -> Self {
         Self {
-            artists: ARTIST_DESCR,
-            technical: TECHNICAL_DESCR,
+            artists: ARTIST_DESCR.to_string(),
+            technical: TECHNICAL_DESCR.to_string(),
         }
     }
 }
@@ -57,5 +57,16 @@ pub fn create_stub(name: &str) -> std::path::PathBuf {
 
 //------------------------------------------------------------------------------
 pub fn verify(name: &str) -> bool {
-    false
+    let path = resolve(name);
+    let change_log: Changelog = serde_yaml::from_reader(
+        std::fs::File::open(
+            path.to_str().expect("changelog path is not unicode"),
+        )
+        .expect("Unable to read change log file"),
+    )
+    .expect("Unable to parse the change log from disk");
+
+    let are_equal = change_log != Changelog::new();
+
+    are_equal
 }
