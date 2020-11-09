@@ -40,9 +40,13 @@ pub fn branch(type_: Type, name: &str) {
     let commit = repo
         .find_commit(develop_oid)
         .expect("Unable to find head commit");
-    let branch = repo
+    let mut branch = repo
         .branch(&branch_name, &commit, false)
         .expect("Unable to create branch");
+
+    branch
+        .set_upstream(Some(&format!("{}", branch_name)))
+        .expect("Unable to set the upstream branch");
 
     repo.set_head(
         branch

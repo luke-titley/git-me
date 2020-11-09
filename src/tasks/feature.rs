@@ -11,6 +11,16 @@ pub fn start(name: &str) {
 
     // Push the new branch
     branch::push(branch::Type::Feature, name);
+
+    // Create a new merge request upfront
+    let remote_url = branch::find_remote();
+    let mut server = server::Server::new();
+    let project = server.project(&remote_url);
+    server.merge_request(
+        &project,
+        branch::base(branch::Type::Feature),
+        &branch::resolve(branch::Type::Feature, name),
+    );
 }
 
 //------------------------------------------------------------------------------
