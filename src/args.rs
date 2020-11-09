@@ -19,6 +19,7 @@ pub enum Task {
     Hotfix(Hotfix),
     Release(Release),
     Setup(Setup),
+    Info(Info),
 }
 
 //------------------------------------------------------------------------------
@@ -151,5 +152,11 @@ pub struct Setup {
     pub server: std::string::String,
     #[argh(option)]
     /// api token
-    pub token: std::string::String,
+    pub private_token: std::string::String,
 }
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
+/// The initial setup of git-me
+#[argh(subcommand, name = "info")]
+pub struct Info {}

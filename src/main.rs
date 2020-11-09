@@ -4,6 +4,8 @@
 mod args;
 mod branch;
 mod changelog;
+mod config;
+mod server;
 mod tasks;
 
 use args::*;
@@ -41,8 +43,14 @@ fn main() {
         }) => {
             println!("Release minor");
         }
-        Task::Setup(Setup { server, token }) => {
-            println!("setup {} {}", server, token);
+        Task::Setup(Setup {
+            server,
+            private_token,
+        }) => {
+            println!("setup {} {}", server, private_token);
+        }
+        Task::Info(Info {}) => {
+            tasks::setup::info();
         }
         _ => (),
     }
