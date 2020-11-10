@@ -40,14 +40,14 @@ pub fn branch(type_: Type, name: &str) {
     let base = base(type_);
     let repo =
         git2::Repository::discover("./").expect("Unable to find git repo");
-    let develop_oid = repo
+    let base_oid = repo
         .find_branch(base, git2::BranchType::Local)
         .expect(&format!("Unable to find branch {}", base))
         .get()
         .target()
         .expect("Unable to find reference target");
     let commit = repo
-        .find_commit(develop_oid)
+        .find_commit(base_oid)
         .expect("Unable to find head commit");
     let mut branch = repo
         .branch(&branch_name, &commit, false)
