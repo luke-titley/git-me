@@ -133,3 +133,13 @@ pub fn find_remote() -> std::string::String {
         .expect("remote url is not valid utf8")
         .to_string()
 }
+
+pub fn verify_index_empty() -> bool {
+    false
+}
+
+pub fn pull_base(type_: Type) {}
+
+pub fn verify_rebased(type_: Type, name: &str) -> bool {
+    false
+}

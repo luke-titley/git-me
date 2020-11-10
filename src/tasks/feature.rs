@@ -25,11 +25,23 @@ pub fn start(name: &str) {
 }
 
 //------------------------------------------------------------------------------
-pub fn review(_: &str) {
+pub fn review() {
     let branch_name = branch::find_name();
 
+    // Verify the changelog has been filled out
     if !changelog::verify(&branch_name.replace("/", "_")) {
         panic!("You've not filled in your changelog");
+    }
+
+    // Verify there's nothing in the index
+    if !branch::verify_index_empty() {
+        panic!("You have uncommited changes");
+    }
+
+    // Set the reviewer
+    branch::pull_base(branch::Type::Feature);
+    if !branch::verify_rebased(branch::Type::Feature, &branch_name) {
+        panic!("You've not rebased your branch");
     }
 }
 
