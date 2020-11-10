@@ -135,7 +135,10 @@ pub fn find_remote() -> std::string::String {
 }
 
 pub fn verify_index_empty() -> bool {
-    false
+    let repo =
+        git2::Repository::discover("./").expect("Unable to find git repo");
+
+    repo.index().expect("Get the current index").is_empty()
 }
 
 pub fn pull_base(type_: Type) {}
