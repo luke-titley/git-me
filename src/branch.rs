@@ -91,8 +91,7 @@ pub fn branch(type_: Type, name: &str) {
 }
 
 //------------------------------------------------------------------------------
-pub fn push(type_: Type, name: &str) {
-    let branch_name = resolve(type_, name);
+pub fn push(branch_name: &str) {
     let repo =
         git2::Repository::discover("./").expect("Unable to find git repo");
     let mut remote = repo
@@ -138,13 +137,43 @@ pub fn verify_index_empty() -> bool {
     let repo =
         git2::Repository::discover("./").expect("Unable to find git repo");
 
-    repo.index()
-        .expect("Unable to get the current index")
-        .is_empty()
+    let statuses = repo.statuses(None).expect("Error getting status");
+    statuses.is_empty()
 }
 
-pub fn pull_base(type_: Type) {}
+pub fn verify_up_to_date(base_commit: &str, name: &str) -> bool {
+    let repo =
+        git2::Repository::discover("./").expect("Unable to find git repo");
 
-pub fn verify_rebased(type_: Type, name: &str) -> bool {
+    let base_commit_oid = git2::Oid::from_str(base_commit)
+        .expect("Unable to convert the base commit id to an Oid");
+
+    let branch_commit = {
+        let b_oid = repo
+            .find_branch(name, git2::BranchType::Local)
+            .expect(&format!("Unable to find branch {}", name))
+            .get()
+            .target()
+            .expect("Unable to find reference target");
+
+        repo.find_commit(b_oid)
+            .expect(&format!("Unable to find head commit for {}", name))
+    };
+
+    let mut current_commit = branch_commit.clone();
+    loop {
+        if current_commit.id() == base_commit_oid {
+            return true;
+        }
+
+        if current_commit.parent_count() == 0 {
+            break;
+        } else {
+            current_commit = current_commit
+                .parent(0)
+                .expect("Unable to obtain parent commit");
+        }
+    }
+
     false
 }

@@ -13,11 +13,53 @@ pub struct Project {
 }
 
 #[derive(
-    Debug, PartialEq, serde::Serialize, serde::Deserialize, Default, Clone,
+    Debug,
+    PartialEq,
+    serde::Serialize,
+    serde::Deserialize,
+    Default,
+    Clone,
+    Eq,
+    PartialOrd,
 )]
 pub struct User {
-    pub id: u64,
     pub username: std::string::String,
+    pub id: u64,
+}
+
+#[derive(
+    Debug,
+    PartialEq,
+    serde::Serialize,
+    serde::Deserialize,
+    Default,
+    Clone,
+    Eq,
+    PartialOrd,
+)]
+pub struct Branch {
+    pub name: std::string::String,
+    pub commit: Commit,
+}
+
+#[derive(
+    Debug,
+    PartialEq,
+    serde::Serialize,
+    serde::Deserialize,
+    Default,
+    Clone,
+    Eq,
+    PartialOrd,
+)]
+pub struct Commit {
+    pub id: std::string::String,
+}
+
+impl std::cmp::Ord for User {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.username.cmp(&other.username)
+    }
 }
 
 pub struct Server {
@@ -59,7 +101,7 @@ impl Server {
             .expect("Unable to list all the users in the gitlab server");
 
         use gitlab::api::Query as _;
-        let users: Vec<User> =
+        let mut users: Vec<User> =
             gitlab::api::paged(pageable_endpoint, gitlab::api::Pagination::All)
                 .query(&self.server)
                 .expect("List users query failed");
@@ -71,11 +113,39 @@ impl Server {
         }
 
         println!("Unable to find user '{}' users are:", username);
+        users.sort();
         for user in users.iter() {
             println!("    {}", user.username);
         }
 
         panic!("Unable to find user")
+    }
+
+    pub fn find_head_commit(
+        &mut self,
+        url: &str,
+        name: &str,
+    ) -> std::string::String {
+        let project = self.project(url);
+
+        let endpoint =
+            gitlab::api::projects::repository::branches::Branches::builder()
+                .project(project.id)
+                .build()
+                .expect("Unable to list all the branches in the given project");
+
+        use gitlab::api::Query as _;
+        let branches: Vec<Branch> = endpoint
+            .query(&self.server)
+            .expect("List projects query failed");
+
+        for branch in branches.iter() {
+            if &branch.name == name {
+                return branch.commit.id.clone();
+            }
+        }
+
+        panic!("Given branch {} not found", name);
     }
 
     pub fn merge_request(

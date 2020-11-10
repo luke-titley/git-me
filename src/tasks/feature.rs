@@ -7,6 +7,14 @@ use crate::server;
 
 //------------------------------------------------------------------------------
 pub fn start(name: &str, reviewer: &str) {
+    // Make sure we are on the develop branch
+    if branch::find_name() != branch::base(branch::Type::Feature) {
+        panic!(
+            "You must start a feature branch from {}",
+            branch::base(branch::Type::Feature)
+        );
+    }
+
     // Find the user specified in reviewer
     let mut server = server::Server::new();
     let assignee = server.find_user(reviewer);
@@ -17,7 +25,7 @@ pub fn start(name: &str, reviewer: &str) {
 
     // Push the new branch
     println!("    * push");
-    branch::push(branch::Type::Feature, name);
+    branch::push(&branch::resolve(branch::Type::Feature, name));
 
     // Create a new merge request upfront
     println!("    * wip merge request");
@@ -45,11 +53,22 @@ pub fn review() {
         panic!("You have uncommited changes");
     }
 
-    // Set the reviewer
-    branch::pull_base(branch::Type::Feature);
-    if !branch::verify_rebased(branch::Type::Feature, &branch_name) {
-        panic!("You've not rebased your branch");
+    // Verify that our branch is up to speed
+    let mut server = server::Server::new();
+    let remote_url = branch::find_remote();
+    let head_commit = server
+        .find_head_commit(&remote_url, branch::base(branch::Type::Feature));
+
+    // Verify that your branch is rebased on top of the latest work in develop
+    if !branch::verify_up_to_date(&head_commit, &branch_name) {
+        panic!(
+            "Your branch is not rebased on the latest {}. You need to pull and rebase",
+            branch::base(branch::Type::Feature)
+        );
     }
+
+    // Push your work
+    branch::push(&branch_name);
 }
 
 //------------------------------------------------------------------------------
