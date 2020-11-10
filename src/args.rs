@@ -30,17 +30,17 @@ pub struct Start {
     #[argh(option)]
     /// name of the new feature/hotfix
     pub name: std::string::String,
+
+    #[argh(option)]
+    /// name of the person to review your work
+    pub reviewer: std::string::String,
 }
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
 /// review
 #[argh(subcommand, name = "review")]
-pub struct Review {
-    #[argh(option)]
-    /// start a new feature
-    pub reviewer: std::string::String,
-}
+pub struct Review {}
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]

@@ -6,21 +6,28 @@ use crate::changelog;
 use crate::server;
 
 //------------------------------------------------------------------------------
-pub fn start(name: &str) {
+pub fn start(name: &str, reviewer: &str) {
+    // Find the user specified in reviewer
+    let mut server = server::Server::new();
+    let assignee = server.find_user(reviewer);
+
     // Make the new branch
+    println!("    * {}", &branch::resolve(branch::Type::Feature, name));
     branch::branch(branch::Type::Feature, name);
 
     // Push the new branch
+    println!("    * push");
     branch::push(branch::Type::Feature, name);
 
     // Create a new merge request upfront
+    println!("    * wip merge request");
     let remote_url = branch::find_remote();
-    let mut server = server::Server::new();
     let project = server.project(&remote_url);
     server.merge_request(
         &project,
         branch::base(branch::Type::Feature),
         &branch::resolve(branch::Type::Feature, name),
+        assignee.id,
     );
 }
 

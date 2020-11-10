@@ -17,10 +17,10 @@ fn main() {
     match tasks.task {
         // Feature
         Task::Feature(Feature { status }) => match status {
-            Status::Start(Start { name }) => tasks::feature::start(&name),
-            Status::Review(Review { reviewer }) => {
-                tasks::feature::review(&reviewer)
+            Status::Start(Start { name, reviewer }) => {
+                tasks::feature::start(&name, &reviewer)
             }
+            Status::Review(Review {}) => tasks::feature::review(),
             Status::Finish(Finish {}) => tasks::feature::finish(),
             Status::Rebase(Rebase {}) => tasks::feature::rebase(),
             Status::Enter(Enter {}) => tasks::feature::enter(),
@@ -29,7 +29,7 @@ fn main() {
             Status::List(List {}) => tasks::feature::list(),
         },
         Task::Hotfix(Hotfix {
-            status: Status::Start(Start { name }),
+            status: Status::Start(Start { name, reviewer }),
         }) => {
             println!("start hotfix/{}", name);
         }

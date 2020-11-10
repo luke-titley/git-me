@@ -12,6 +12,14 @@ pub struct Project {
     pub ssh_url_to_repo: std::string::String,
 }
 
+#[derive(
+    Debug, PartialEq, serde::Serialize, serde::Deserialize, Default, Clone,
+)]
+pub struct User {
+    pub id: u64,
+    pub username: std::string::String,
+}
+
 pub struct Server {
     server: gitlab::Gitlab,
 }
@@ -45,11 +53,37 @@ impl Server {
         panic!("Unable to find gitlab project for current repo");
     }
 
+    pub fn find_user(&mut self, username: &str) -> User {
+        let pageable_endpoint = gitlab::api::users::Users::builder()
+            .build()
+            .expect("Unable to list all the users in the gitlab server");
+
+        use gitlab::api::Query as _;
+        let users: Vec<User> =
+            gitlab::api::paged(pageable_endpoint, gitlab::api::Pagination::All)
+                .query(&self.server)
+                .expect("List users query failed");
+
+        for user in users.iter() {
+            if &user.username == username {
+                return user.clone();
+            }
+        }
+
+        println!("Unable to find user '{}' users are:", username);
+        for user in users.iter() {
+            println!("    {}", user.username);
+        }
+
+        panic!("Unable to find user")
+    }
+
     pub fn merge_request(
         &mut self,
         project: &Project,
         base: &str,
         branch: &str,
+        reviewer: u64,
     ) {
         let title = format!("WIP: {}", branch);
         let endpoint =
@@ -59,6 +93,7 @@ impl Server {
             .source_branch(branch)
             .target_branch(base)
             .title(&title)
+            .assignee(reviewer)
             .build()
             .expect("Unable to list all the project in the gitlab server");
 
