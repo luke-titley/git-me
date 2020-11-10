@@ -10,6 +10,15 @@ pub enum Type {
 }
 
 //------------------------------------------------------------------------------
+pub fn find_name() -> std::string::String {
+    let repo =
+        git2::Repository::discover("./").expect("Unable to find git repo");
+    let head = repo.head().expect("Unable to find head");
+
+    head.shorthand().expect("Head has no name").to_string()
+}
+
+//------------------------------------------------------------------------------
 pub fn resolve(type_: Type, name: &str) -> std::string::String {
     match type_ {
         Type::Feature => format!("feature/{}", name),
@@ -56,7 +65,7 @@ pub fn branch(type_: Type, name: &str) {
     )
     .expect("Unable to set HEAD to point to new branch");
 
-    let changelog = changelog::create_stub(name);
+    let changelog = changelog::create_stub(&branch_name.replace("/", "_"));
     let mut index = repo.index().expect("Unable to create index for changelog");
     index
         .add_path(changelog.as_path())

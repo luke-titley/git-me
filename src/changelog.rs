@@ -66,7 +66,7 @@ pub fn verify(name: &str) -> bool {
     )
     .expect("Unable to parse the change log from disk");
 
-    let are_equal = change_log != Changelog::new();
+    let are_equal = change_log == Changelog::new();
 
-    are_equal
+    !are_equal
 }

@@ -2,6 +2,7 @@
 // from+git_me@luketitley.com
 //------------------------------------------------------------------------------
 use crate::branch;
+use crate::changelog;
 use crate::server;
 
 //------------------------------------------------------------------------------
@@ -24,12 +25,12 @@ pub fn start(name: &str) {
 }
 
 //------------------------------------------------------------------------------
-pub fn review(reviewer: &str) {
-    println!("review feature by {}", reviewer);
-    let remote_url = branch::find_remote();
-    let server = server::Server::new();
+pub fn review(_: &str) {
+    let branch_name = branch::find_name();
 
-    let project = server.project(&remote_url);
+    if !changelog::verify(&branch_name.replace("/", "_")) {
+        panic!("You've not filled in your changelog");
+    }
 }
 
 //------------------------------------------------------------------------------
