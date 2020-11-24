@@ -116,7 +116,11 @@ pub struct Hotfix {
 #[derive(FromArgs, PartialEq, Debug)]
 /// develop
 #[argh(subcommand, name = "develop")]
-pub struct Develop {}
+pub struct Develop {
+    #[argh(option)]
+    /// the tag version we will use for this release
+    pub tag : std::string::String,
+}
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]

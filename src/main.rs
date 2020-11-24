@@ -39,9 +39,9 @@ fn main() {
             println!("Not implemented");
         }
         Task::Release(Release {
-            branch: Branch::Develop(Develop {}),
+            branch: Branch::Develop(Develop { tag }),
         }) => {
-            tasks::release::develop();
+            tasks::release::develop(&tag);
         }
         Task::Setup(Setup {
             server,

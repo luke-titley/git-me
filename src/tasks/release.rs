@@ -4,6 +4,6 @@
 use crate::changelog;
 
 //------------------------------------------------------------------------------
-pub fn develop() {
-    changelog::aggregate("v0.0.1", &["feature"]);
+pub fn develop(tag : &str) {
+    changelog::aggregate(tag, &["feature"]);
 }
