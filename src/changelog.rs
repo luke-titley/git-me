@@ -148,7 +148,7 @@ pub fn aggregate(
     // Remove the individual changelogs
     for change_log in change_logs.iter() {
         std::fs::remove_file(&change_log)
-            .expect(format!("Unable to remove {:?}", &change_log));
+            .expect(&format!("Unable to remove {:?}", &change_log));
     }
 
     change_logs
