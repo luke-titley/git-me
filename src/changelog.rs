@@ -4,6 +4,7 @@
 
 const ARTIST_DESCR: &'static str = "For artists";
 const TECHNICAL_DESCR: &'static str = "For developers";
+const CHANGELOG: &'static str = "changelog";
 
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 struct Changelog {
@@ -18,11 +19,21 @@ impl Changelog {
             technical: vec![TECHNICAL_DESCR.to_string()],
         }
     }
+    pub fn empty() -> Self {
+        Self {
+            artists: vec![],
+            technical: vec![],
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.artists.is_empty() && self.technical.is_empty()
+    }
 }
 
 //------------------------------------------------------------------------------
 pub fn resolve(name: &str) -> std::path::PathBuf {
-    let mut changelog_file = std::path::PathBuf::from("changelog");
+    let mut changelog_file = std::path::PathBuf::from(CHANGELOG);
     changelog_file.push(std::path::Path::new(name));
     changelog_file.set_extension("yml");
     changelog_file
@@ -65,4 +76,73 @@ pub fn verify(name: &str) -> bool {
 }
 
 //------------------------------------------------------------------------------
-pub fn aggregate(prefix: &[&str]) {}
+pub fn aggregate(
+    tag: &str,
+    prefix: &[&str],
+) -> std::vec::Vec<std::path::PathBuf> {
+    // Obtain a list of all the changelog files that match the given prefixes.
+    // These will be aggregated and combined into a single changelog.
+    let mut change_logs: std::vec::Vec<std::path::PathBuf> =
+        glob::glob(&format!("{}/**/*", &CHANGELOG))
+            .expect("Failed to read glob")
+            .filter(|e| {
+                if let Ok(entry) = e {
+                    if entry.is_file() {
+                        let file_path = entry.to_str().unwrap();
+                        for p in prefix.iter() {
+                            if file_path[CHANGELOG.len() + 1..].starts_with(p) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                false
+            })
+            .map(|p| p.unwrap())
+            .collect();
+
+    change_logs.sort();
+    let change_logs = change_logs;
+
+    // Aggregate all the changelogs to produce a single one with the combined
+    let mut aggregate_changelog = Changelog::empty();
+    for changelog_file in change_logs.iter() {
+        let changelog: Changelog = serde_yaml::from_reader(
+            std::fs::File::open(&changelog_file)
+                .expect("Unable to open changelog file"),
+        )
+        .expect("Unable to read changelog file");
+
+        if changelog != Changelog::new() {
+            // Combine all the artists notes
+            if !changelog.artists.is_empty() {
+                aggregate_changelog.artists.push("".to_string());
+                aggregate_changelog
+                    .artists
+                    .extend_from_slice(&changelog.artists[..]);
+            }
+
+            // Combine all the technical notes
+            if !changelog.technical.is_empty() {
+                aggregate_changelog.technical.push("".to_string());
+                aggregate_changelog
+                    .technical
+                    .extend_from_slice(&changelog.technical[..]);
+            }
+        }
+    }
+
+    if aggregate_changelog.is_empty() {
+        panic!("There are no changelogs for this release!");
+    }
+
+    let aggregate_changelog_path = resolve(&format!("{}.e", tag));
+    serde_yaml::to_writer(
+        std::fs::File::create(&aggregate_changelog_path)
+            .expect("Unable to create aggregate changelog file"),
+        &aggregate_changelog,
+    )
+    .expect("Unable to write the aggregate changlog to disk");
+
+    change_logs
+}

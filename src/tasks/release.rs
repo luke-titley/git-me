@@ -5,5 +5,5 @@ use crate::changelog;
 
 //------------------------------------------------------------------------------
 pub fn develop() {
-    changelog::aggregate(&["feature"]);
+    changelog::aggregate("v0.0.1", &["feature"]);
 }
