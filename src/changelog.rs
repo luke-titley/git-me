@@ -31,18 +31,14 @@ pub fn resolve(name: &str) -> std::path::PathBuf {
 
 //------------------------------------------------------------------------------
 pub fn create_stub(name: &str) -> std::path::PathBuf {
-    // Create the changelog folder
-    let changelog_dir = std::path::Path::new("changelog");
-    if !changelog_dir.exists() {
-        std::fs::create_dir(changelog_dir)
-            .expect("Unable to create changlog folder");
-    }
-
-    // Create the changelog file path
-    let mut changelog_file = changelog_dir.to_path_buf();
-    changelog_file.push(name);
-    changelog_file.set_file_name(name);
+    // Build the changelog file path
+    let mut changelog_file = std::path::PathBuf::from("changelog");
+    changelog_file.push(std::path::Path::new(name));
     changelog_file.set_extension("yml");
+
+    // Make sure the owning folder exists
+    std::fs::create_dir_all(changelog_file.parent().unwrap())
+        .expect("Unable to create changlog folder");
 
     // Write a stub changelog file to disk
     serde_yaml::to_writer(
