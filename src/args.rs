@@ -119,7 +119,7 @@ pub struct Hotfix {
 pub struct Develop {
     #[argh(option)]
     /// the tag version we will use for this release
-    pub tag : std::string::String,
+    pub tag: std::string::String,
 }
 
 //------------------------------------------------------------------------------

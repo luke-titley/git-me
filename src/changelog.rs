@@ -136,6 +136,7 @@ pub fn aggregate(
         panic!("There are no changelogs for this release!");
     }
 
+    // Write the aggregate changelog to disk
     let aggregate_changelog_path = resolve(&format!("{}.e", tag));
     serde_yaml::to_writer(
         std::fs::File::create(&aggregate_changelog_path)
@@ -143,6 +144,12 @@ pub fn aggregate(
         &aggregate_changelog,
     )
     .expect("Unable to write the aggregate changlog to disk");
+
+    // Remove the individual changelogs
+    for change_log in change_logs.iter() {
+        std::fs::remove_file(&change_log)
+            .expect(format!("Unable to remove {:?}", &change_log));
+    }
 
     change_logs
 }
