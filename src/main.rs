@@ -31,17 +31,17 @@ fn main() {
         Task::Hotfix(Hotfix {
             status: Status::Start(Start { name, reviewer }),
         }) => {
-            println!("start hotfix/{}", name);
+            println!("Not implemented");
         }
         Task::Release(Release {
             branch: Branch::Master(Master {}),
         }) => {
-            println!("Release patch");
+            println!("Not implemented");
         }
         Task::Release(Release {
             branch: Branch::Develop(Develop {}),
         }) => {
-            println!("Release minor");
+            tasks::release::develop();
         }
         Task::Setup(Setup {
             server,

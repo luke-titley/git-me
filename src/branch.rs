@@ -65,7 +65,7 @@ pub fn branch(type_: Type, name: &str) {
     )
     .expect("Unable to set HEAD to point to new branch");
 
-    let changelog = changelog::create_stub(&branch_name.replace("/", "_"));
+    let changelog = changelog::create_stub(&branch_name);
     let mut index = repo.index().expect("Unable to create index for changelog");
     index
         .add_path(changelog.as_path())

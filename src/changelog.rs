@@ -7,24 +7,23 @@ const TECHNICAL_DESCR: &'static str = "For developers";
 
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 struct Changelog {
-    pub artists: std::string::String,
-    pub technical: std::string::String,
+    pub artists: std::vec::Vec<std::string::String>,
+    pub technical: std::vec::Vec<std::string::String>,
 }
 
 impl Changelog {
     pub fn new() -> Self {
         Self {
-            artists: ARTIST_DESCR.to_string(),
-            technical: TECHNICAL_DESCR.to_string(),
+            artists: vec![ARTIST_DESCR.to_string()],
+            technical: vec![TECHNICAL_DESCR.to_string()],
         }
     }
 }
 
 //------------------------------------------------------------------------------
 pub fn resolve(name: &str) -> std::path::PathBuf {
-    let mut changelog_file = std::path::Path::new("changelog").to_path_buf();
-    changelog_file.push(name);
-    changelog_file.set_file_name(name);
+    let mut changelog_file = std::path::PathBuf::from("changelog");
+    changelog_file.push(std::path::Path::new(name));
     changelog_file.set_extension("yml");
     changelog_file
 }
@@ -32,9 +31,7 @@ pub fn resolve(name: &str) -> std::path::PathBuf {
 //------------------------------------------------------------------------------
 pub fn create_stub(name: &str) -> std::path::PathBuf {
     // Build the changelog file path
-    let mut changelog_file = std::path::PathBuf::from("changelog");
-    changelog_file.push(std::path::Path::new(name));
-    changelog_file.set_extension("yml");
+    let changelog_file = resolve(name);
 
     // Make sure the owning folder exists
     std::fs::create_dir_all(changelog_file.parent().unwrap())
@@ -66,3 +63,6 @@ pub fn verify(name: &str) -> bool {
 
     !are_equal
 }
+
+//------------------------------------------------------------------------------
+pub fn aggregate(prefix: &[&str]) {}
