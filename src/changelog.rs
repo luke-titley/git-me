@@ -79,7 +79,7 @@ pub fn verify(name: &str) -> bool {
 pub fn aggregate(
     tag: &str,
     prefix: &[&str],
-) -> std::vec::Vec<std::path::PathBuf> {
+) -> (std::path::PathBuf, std::vec::Vec<std::path::PathBuf>) {
     // Obtain a list of all the changelog files that match the given prefixes.
     // These will be aggregated and combined into a single changelog.
     let mut change_logs: std::vec::Vec<std::path::PathBuf> =
@@ -151,5 +151,5 @@ pub fn aggregate(
             .expect(&format!("Unable to remove {:?}", &change_log));
     }
 
-    change_logs
+    (aggregate_changelog_path, change_logs)
 }

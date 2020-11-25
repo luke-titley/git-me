@@ -90,6 +90,85 @@ pub fn branch(type_: Type, name: &str) {
     repo.checkout_head(None).expect("Reset everything to head");
 }
 
+/*
+//------------------------------------------------------------------------------
+pub fn update_all() {
+    let repo =
+        git2::Repository::discover("./").expect("Unable to find git repo");
+
+    let mut index = repo.index().expect("Unable to create index for changelog");
+    index.update_all(&["*"], None).expect("Unable to update all");
+}
+*/
+
+//------------------------------------------------------------------------------
+pub fn remove_from_index(paths: &[std::path::PathBuf]) {
+    let repo =
+        git2::Repository::discover("./").expect("Unable to find git repo");
+
+    let mut index = repo.index().expect("Unable to create index for changelog");
+    for path in paths.iter() {
+        index
+            .remove_path(path.as_path())
+            .expect(&format!("Unable to add {:?} to index", &path));
+    }
+}
+
+//------------------------------------------------------------------------------
+pub fn add_and_remove(
+    branch: &str,
+    comment: &str,
+    add: &[std::path::PathBuf],
+    remove: &[std::path::PathBuf],
+) {
+    let repo =
+        git2::Repository::discover("./").expect("Unable to find git repo");
+
+    let mut index = repo.index().expect("Unable to create index for changelog");
+
+    // Add
+    for path in add.iter() {
+        index
+            .add_path(path.as_path())
+            .expect(&format!("Unable to add {:?} to index", &path));
+    }
+
+    // Remove
+    for path in remove.iter() {
+        index
+            .remove_path(path.as_path())
+            .expect(&format!("Unable to add {:?} to index", &path));
+    }
+
+    let index_oid = index.write_tree().expect("Unable to write index");
+
+    let tree = repo
+        .find_tree(index_oid)
+        .expect("Unable to find tree for new index");
+
+    let base_oid = repo
+        .find_branch(branch, git2::BranchType::Local)
+        .expect(&format!("Unable to find branch {}", branch))
+        .get()
+        .target()
+        .expect("Unable to find reference target");
+    let commit = repo
+        .find_commit(base_oid)
+        .expect("Unable to find head commit");
+
+    repo.commit(
+        Some("HEAD"),
+        &repo.signature().expect("Unable to obtain signature"),
+        &repo.signature().expect("Unable to obtain signature"),
+        comment,
+        &tree,
+        &[&commit],
+    )
+    .expect("Unable to make initial commit");
+
+    repo.checkout_head(None).expect("Reset everything to head");
+}
+
 //------------------------------------------------------------------------------
 pub fn push(branch_name: &str) {
     let repo =
