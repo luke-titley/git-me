@@ -13,7 +13,7 @@ pub fn develop(tag: &str) {
     // Add the new changes to the index
     branch::add_and_remove(
         "develop",
-        &format!("[changelog(\"{}\")]", tag),
+        &format!("Generate changelog for '{}'", tag),
         &[aggregate_changelog],
         &changelogs[..],
     );
