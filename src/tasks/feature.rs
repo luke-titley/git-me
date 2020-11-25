@@ -44,7 +44,7 @@ pub fn review() {
     let branch_name = branch::find_name();
 
     // Verify the changelog has been filled out
-    if !changelog::verify(&branch_name.replace("/", "_")) {
+    if !changelog::verify(&branch_name) {
         panic!("You've not filled in your changelog");
     }
 
