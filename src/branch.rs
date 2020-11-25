@@ -81,7 +81,7 @@ pub fn branch(type_: Type, name: &str) {
         Some("HEAD"),
         &repo.signature().expect("Unable to obtain signature"),
         &repo.signature().expect("Unable to obtain signature"),
-        &format!("[start] {}", branch_name),
+        &format!("[start(\"{}\")]", branch_name),
         &tree,
         &[&commit],
     )
