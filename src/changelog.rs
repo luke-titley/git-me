@@ -6,29 +6,33 @@ const ARTIST_DESCR: &'static str = "For artists";
 const TECHNICAL_DESCR: &'static str = "For developers";
 const CHANGELOG: &'static str = "changelog";
 
+use serde_yaml::Value;
+
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 struct Changelog {
-    pub artists: std::vec::Vec<std::string::String>,
-    pub technical: std::vec::Vec<std::string::String>,
+    pub artists: Value,
+    pub technical: Value,
 }
 
 impl Changelog {
     pub fn new() -> Self {
         Self {
-            artists: vec![ARTIST_DESCR.to_string()],
-            technical: vec![TECHNICAL_DESCR.to_string()],
+            artists: Value::String(ARTIST_DESCR.to_string()),
+            technical: Value::String(TECHNICAL_DESCR.to_string()),
         }
     }
     pub fn empty() -> Self {
         Self {
-            artists: vec![],
-            technical: vec![],
+            artists: Value::Null,
+            technical: Value::Null,
         }
     }
 
+    /*
     pub fn is_empty(&self) -> bool {
         self.artists.is_empty() && self.technical.is_empty()
     }
+    */
 }
 
 //------------------------------------------------------------------------------
@@ -113,6 +117,7 @@ pub fn aggregate(
         )
         .expect("Unable to read changelog file");
 
+        /*
         if changelog != Changelog::new() {
             // Combine all the artists notes
             if !changelog.artists.is_empty() {
@@ -130,11 +135,14 @@ pub fn aggregate(
                     .extend_from_slice(&changelog.technical[..]);
             }
         }
+        */
     }
 
+    /*
     if aggregate_changelog.is_empty() {
         panic!("There are no changelogs for this release!");
     }
+    */
 
     // Write the aggregate changelog to disk
     let aggregate_changelog_path = resolve(&format!("{}.e", tag));
