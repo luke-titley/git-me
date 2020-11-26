@@ -28,11 +28,9 @@ impl Changelog {
         }
     }
 
-    /*
     pub fn is_empty(&self) -> bool {
-        self.artists.is_empty() && self.technical.is_empty()
+        self.artists.is_null() && self.technical.is_null()
     }
-    */
 }
 
 //------------------------------------------------------------------------------
@@ -80,6 +78,9 @@ pub fn verify(name: &str) -> bool {
 }
 
 //------------------------------------------------------------------------------
+fn merge_work(lhs: &mut Value, rhs: &Value) {}
+
+//------------------------------------------------------------------------------
 pub fn aggregate(
     tag: &str,
     prefix: &[&str],
@@ -117,32 +118,28 @@ pub fn aggregate(
         )
         .expect("Unable to read changelog file");
 
-        /*
         if changelog != Changelog::new() {
             // Combine all the artists notes
-            if !changelog.artists.is_empty() {
-                aggregate_changelog.artists.push("".to_string());
-                aggregate_changelog
-                    .artists
-                    .extend_from_slice(&changelog.artists[..]);
+            if !changelog.artists.is_null() {
+                merge_work(
+                    &mut aggregate_changelog.artists,
+                    &changelog.artists,
+                );
             }
 
             // Combine all the technical notes
-            if !changelog.technical.is_empty() {
-                aggregate_changelog.technical.push("".to_string());
-                aggregate_changelog
-                    .technical
-                    .extend_from_slice(&changelog.technical[..]);
+            if !changelog.technical.is_null() {
+                merge_work(
+                    &mut aggregate_changelog.technical,
+                    &changelog.technical,
+                );
             }
         }
-        */
     }
 
-    /*
     if aggregate_changelog.is_empty() {
         panic!("There are no changelogs for this release!");
     }
-    */
 
     // Write the aggregate changelog to disk
     let aggregate_changelog_path = resolve(&format!("{}.e", tag));
