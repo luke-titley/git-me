@@ -12,31 +12,32 @@ use std::collections::HashMap;
 type Work = HashMap<std::string::String, std::vec::Vec<std::string::String>>;
 
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[allow(non_snake_case)]
 struct Changelog {
-    pub artists: Work,
-    pub technical: Work,
+    pub Artists: Work,
+    pub Technical: Work,
 }
 
 impl Changelog {
     pub fn new() -> Self {
         Self {
-            artists: hashmap! {
+            Artists: hashmap! {
                 "General".to_string() => vec![ ARTIST_DESCR.to_string() ]
             },
-            technical: hashmap! {
+            Technical: hashmap! {
                 "General".to_string() => vec![ TECHNICAL_DESCR.to_string() ]
             },
         }
     }
     pub fn empty() -> Self {
         Self {
-            artists: HashMap::new(),
-            technical: HashMap::new(),
+            Artists: HashMap::new(),
+            Technical: HashMap::new(),
         }
     }
 
     pub fn is_empty(&self) -> bool {
-        self.artists.is_empty() && self.technical.is_empty()
+        self.Artists.is_empty() && self.Technical.is_empty()
     }
 }
 
@@ -141,18 +142,18 @@ pub fn aggregate(
 
         if changelog != Changelog::new() {
             // Combine all the artists notes
-            if !changelog.artists.is_empty() {
+            if !changelog.Artists.is_empty() {
                 merge_work(
-                    &mut aggregate_changelog.artists,
-                    &changelog.artists,
+                    &mut aggregate_changelog.Artists,
+                    &changelog.Artists,
                 );
             }
 
             // Combine all the technical notes
-            if !changelog.technical.is_empty() {
+            if !changelog.Technical.is_empty() {
                 merge_work(
-                    &mut aggregate_changelog.technical,
-                    &changelog.technical,
+                    &mut aggregate_changelog.Technical,
+                    &changelog.Technical,
                 );
             }
         }
