@@ -1,9 +1,6 @@
 //------------------------------------------------------------------------------
 // from+git_me@luketitley.com
 //------------------------------------------------------------------------------
-
-const ARTIST_DESCR: &'static str = "For artists";
-const TECHNICAL_DESCR: &'static str = "For developers";
 const CHANGELOG: &'static str = "changelog";
 
 use maplit::hashmap;
@@ -22,10 +19,10 @@ impl Changelog {
     pub fn new() -> Self {
         Self {
             Artists: hashmap! {
-                "General".to_string() => vec![ ARTIST_DESCR.to_string() ]
+                "General".to_string() => vec![]
             },
             Technical: hashmap! {
-                "General".to_string() => vec![ TECHNICAL_DESCR.to_string() ]
+                "General".to_string() => vec![]
             },
         }
     }
@@ -90,13 +87,15 @@ pub fn verify(name: &str) -> bool {
 fn merge_work(lhs: &mut Work, rhs: &Work) {
     use heck::TitleCase as _;
     for (key, r) in rhs.iter() {
-        let key = key.to_title_case();
-        match lhs.get_mut(&key) {
-            Some(l) => {
-                l.extend_from_slice(&r[..]);
-            }
-            None => {
-                lhs.insert(key, r.clone());
+        if !r.is_empty() {
+            let key = key.to_title_case();
+            match lhs.get_mut(&key) {
+                Some(l) => {
+                    l.extend_from_slice(&r[..]);
+                }
+                None => {
+                    lhs.insert(key, r.clone());
+                }
             }
         }
     }
@@ -160,7 +159,9 @@ pub fn aggregate(
     }
 
     if aggregate_changelog.is_empty() {
-        panic!("There are no changelogs for this release!");
+        println!(
+            "Warning: There are no changes in the changelog for this release!"
+        );
     }
 
     // Write the aggregate changelog to disk
