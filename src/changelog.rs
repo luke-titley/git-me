@@ -87,43 +87,18 @@ pub fn verify(name: &str) -> bool {
 
 //------------------------------------------------------------------------------
 fn merge_work(lhs: &mut Work, rhs: &Work) {
-    /*
-    match (lhs, rhs) {
-        (Value::Mapping(lhs), Value::Mapping(rhs)) => {
-            for (key, rhs) in rhs.iter() {
-                // Add rhs to lhs
-                match lhs.get_mut(&key) {
-                    // Merge
-                    Some(lhs) => {
-                        merge_work(lhs, rhs);
-                    },
-                    // Add
-                    None => {
-                        lhs.insert(key.clone(), rhs.clone());
-                    }
-                }
+    use heck::TitleCase as _;
+    for (key, r) in rhs.iter() {
+        let key = key.to_title_case();
+        match lhs.get_mut(&key) {
+            Some(l) => {
+                l.extend_from_slice(&r[..]);
+            }
+            None => {
+                lhs.insert(key, r.clone());
             }
         }
-        (Value::Mapping(lhs), rhs) => {
-            let general = Value::String("General".to_string());
-            match lhs.get_mut(&general) {
-                Some(Value::Sequence(lhs)) => {
-                    lhs.push(rhs.clone());
-                }
-                None => {
-                    lhs.insert(general, Value::Sequence(vec![rhs.clone()]));
-                }
-                Some(previous) => {
-                    lhs.insert(
-                        general,
-                        Value::Sequence(vec![previous.clone(), rhs.clone()]),
-                    );
-                }
-            }
-        }
-        _ => {}
     }
-    */
 }
 
 //------------------------------------------------------------------------------
