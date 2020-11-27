@@ -73,9 +73,15 @@ pub fn verify(name: &str) -> bool {
         std::fs::File::open(
             path.to_str().expect("changelog path is not unicode"),
         )
-        .expect("Unable to read change log file"),
+        .expect(&format!(
+            "Unable to read change log file {}",
+            path.to_str().unwrap()
+        )),
     )
-    .expect("Unable to parse the change log from disk");
+    .expect(&format!(
+        "Unable to parse the change log from disk {}",
+        path.to_str().unwrap()
+    ));
 
     // Make sure the change log isn't empty
     assert!(change_log != Changelog::new());
@@ -134,10 +140,15 @@ pub fn aggregate(
     let mut aggregate_changelog = Changelog::empty();
     for changelog_file in change_logs.iter() {
         let changelog: Changelog = serde_yaml::from_reader(
-            std::fs::File::open(&changelog_file)
-                .expect("Unable to open changelog file"),
+            std::fs::File::open(&changelog_file).expect(&format!(
+                "Unable to open changelog file {}",
+                changelog_file.to_str().unwrap()
+            )),
         )
-        .expect("Unable to read changelog file");
+        .expect(&format!(
+            "Unable to read changelog file {}",
+            changelog_file.to_str().unwrap()
+        ));
 
         if changelog != Changelog::new() {
             // Combine all the artists notes
