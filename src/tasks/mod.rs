@@ -2,7 +2,7 @@
 // from+git_me@luketitley.com
 //------------------------------------------------------------------------------
 
+pub mod changelog;
 pub mod feature;
 pub mod hotfix;
-pub mod release;
 pub mod setup;

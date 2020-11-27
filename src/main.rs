@@ -29,19 +29,14 @@ fn main() {
             Status::List(List {}) => tasks::feature::list(),
         },
         Task::Hotfix(Hotfix {
-            status: Status::Start(Start { name, reviewer }),
+            status: Status::Start(Start { .. }),
         }) => {
             println!("Not implemented");
         }
-        Task::Release(Release {
-            branch: Branch::Master(Master {}),
+        Task::Changelog(Changelog {
+            status: ChangelogStatus::Aggregate(Aggregate { tag }),
         }) => {
-            println!("Not implemented");
-        }
-        Task::Release(Release {
-            branch: Branch::Develop(Develop { tag }),
-        }) => {
-            tasks::release::develop(&tag);
+            tasks::changelog::aggregate(&tag);
         }
         Task::Setup(Setup {
             server,

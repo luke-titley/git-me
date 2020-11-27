@@ -108,10 +108,7 @@ fn merge_work(lhs: &mut Work, rhs: &Work) {
 }
 
 //------------------------------------------------------------------------------
-pub fn aggregate(
-    tag: &str,
-    prefix: &[&str],
-) -> (std::path::PathBuf, std::vec::Vec<std::path::PathBuf>) {
+pub fn aggregate(tag: &str, prefix: &[&str]) {
     // Obtain a list of all the changelog files that match the given prefixes.
     // These will be aggregated and combined into a single changelog.
     let mut change_logs: std::vec::Vec<std::path::PathBuf> =
@@ -183,6 +180,4 @@ pub fn aggregate(
         &aggregate_changelog,
     )
     .expect("Unable to write the aggregate changlog to disk");
-
-    (aggregate_changelog_path, change_logs)
 }

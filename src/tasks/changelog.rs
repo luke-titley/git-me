@@ -4,7 +4,7 @@
 use crate::changelog;
 
 //------------------------------------------------------------------------------
-pub fn develop(tag: &str) {
+pub fn aggregate(tag: &str) {
     // Build the aggregate changelog
     let _ = changelog::aggregate(tag, &["feature", "hotfix"]);
 }

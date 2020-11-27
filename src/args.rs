@@ -17,7 +17,7 @@ pub struct Tasks {
 pub enum Task {
     Feature(Feature),
     Hotfix(Hotfix),
-    Release(Release),
+    Changelog(Changelog),
     Setup(Setup),
     Info(Info),
 }
@@ -114,36 +114,29 @@ pub struct Hotfix {
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
-/// develop
-#[argh(subcommand, name = "develop")]
-pub struct Develop {
+/// Build a changelog for a version, by merging feature changelogs
+#[argh(subcommand, name = "aggregate")]
+pub struct Aggregate {
     #[argh(option)]
-    /// the tag version we will use for this release
+    /// the tag version we will use for this changelog
     pub tag: std::string::String,
 }
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
-/// develop
-#[argh(subcommand, name = "master")]
-pub struct Master {}
-
-//------------------------------------------------------------------------------
-#[derive(FromArgs, PartialEq, Debug)]
 #[argh(subcommand)]
-pub enum Branch {
-    Master(Master),
-    Develop(Develop),
+pub enum ChangelogStatus {
+    Aggregate(Aggregate),
 }
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
-/// Working with master branch
-#[argh(subcommand, name = "release")]
-pub struct Release {
+/// Operations for working with changelogs
+#[argh(subcommand, name = "changelog")]
+pub struct Changelog {
     #[argh(subcommand)]
-    /// the operation to perform
-    pub branch: Branch,
+    /// combine the feature changlogs
+    pub status: ChangelogStatus,
 }
 
 //------------------------------------------------------------------------------
