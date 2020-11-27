@@ -173,11 +173,5 @@ pub fn aggregate(
     )
     .expect("Unable to write the aggregate changlog to disk");
 
-    // Remove the individual changelogs
-    for change_log in change_logs.iter() {
-        std::fs::remove_file(&change_log)
-            .expect(&format!("Unable to remove {:?}", &change_log));
-    }
-
     (aggregate_changelog_path, change_logs)
 }
