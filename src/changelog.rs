@@ -6,30 +6,37 @@ const ARTIST_DESCR: &'static str = "For artists";
 const TECHNICAL_DESCR: &'static str = "For developers";
 const CHANGELOG: &'static str = "changelog";
 
-use serde_yaml::Value;
+use maplit::hashmap;
+use std::collections::HashMap;
+
+type Work = HashMap<std::string::String, std::vec::Vec<std::string::String>>;
 
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 struct Changelog {
-    pub artists: Value,
-    pub technical: Value,
+    pub artists: Work,
+    pub technical: Work,
 }
 
 impl Changelog {
     pub fn new() -> Self {
         Self {
-            artists: Value::String(ARTIST_DESCR.to_string()),
-            technical: Value::String(TECHNICAL_DESCR.to_string()),
+            artists: hashmap! {
+                "General".to_string() => vec![ ARTIST_DESCR.to_string() ]
+            },
+            technical: hashmap! {
+                "General".to_string() => vec![ TECHNICAL_DESCR.to_string() ]
+            },
         }
     }
     pub fn empty() -> Self {
         Self {
-            artists: Value::Null,
-            technical: Value::Null,
+            artists: HashMap::new(),
+            technical: HashMap::new(),
         }
     }
 
     pub fn is_empty(&self) -> bool {
-        self.artists.is_null() && self.technical.is_null()
+        self.artists.is_empty() && self.technical.is_empty()
     }
 }
 
@@ -72,13 +79,52 @@ pub fn verify(name: &str) -> bool {
     )
     .expect("Unable to parse the change log from disk");
 
-    let are_equal = change_log == Changelog::new();
+    // Make sure the change log isn't empty
+    assert!(change_log != Changelog::new());
 
-    !are_equal
+    true
 }
 
 //------------------------------------------------------------------------------
-fn merge_work(lhs: &mut Value, rhs: &Value) {}
+fn merge_work(lhs: &mut Work, rhs: &Work) {
+    /*
+    match (lhs, rhs) {
+        (Value::Mapping(lhs), Value::Mapping(rhs)) => {
+            for (key, rhs) in rhs.iter() {
+                // Add rhs to lhs
+                match lhs.get_mut(&key) {
+                    // Merge
+                    Some(lhs) => {
+                        merge_work(lhs, rhs);
+                    },
+                    // Add
+                    None => {
+                        lhs.insert(key.clone(), rhs.clone());
+                    }
+                }
+            }
+        }
+        (Value::Mapping(lhs), rhs) => {
+            let general = Value::String("General".to_string());
+            match lhs.get_mut(&general) {
+                Some(Value::Sequence(lhs)) => {
+                    lhs.push(rhs.clone());
+                }
+                None => {
+                    lhs.insert(general, Value::Sequence(vec![rhs.clone()]));
+                }
+                Some(previous) => {
+                    lhs.insert(
+                        general,
+                        Value::Sequence(vec![previous.clone(), rhs.clone()]),
+                    );
+                }
+            }
+        }
+        _ => {}
+    }
+    */
+}
 
 //------------------------------------------------------------------------------
 pub fn aggregate(
@@ -120,7 +166,7 @@ pub fn aggregate(
 
         if changelog != Changelog::new() {
             // Combine all the artists notes
-            if !changelog.artists.is_null() {
+            if !changelog.artists.is_empty() {
                 merge_work(
                     &mut aggregate_changelog.artists,
                     &changelog.artists,
@@ -128,7 +174,7 @@ pub fn aggregate(
             }
 
             // Combine all the technical notes
-            if !changelog.technical.is_null() {
+            if !changelog.technical.is_empty() {
                 merge_work(
                     &mut aggregate_changelog.technical,
                     &changelog.technical,
