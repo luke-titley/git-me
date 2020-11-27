@@ -124,9 +124,20 @@ pub struct Aggregate {
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
+/// Build a changelog for a version, by merging feature changelogs
+#[argh(subcommand, name = "validate")]
+pub struct Validate {
+    #[argh(option)]
+    /// the tag version we will use for this changelog
+    pub path: std::string::String,
+}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
 #[argh(subcommand)]
 pub enum ChangelogStatus {
     Aggregate(Aggregate),
+    Validate(Validate),
 }
 
 //------------------------------------------------------------------------------

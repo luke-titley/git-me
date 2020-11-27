@@ -38,6 +38,11 @@ fn main() {
         }) => {
             tasks::changelog::aggregate(&tag);
         }
+        Task::Changelog(Changelog {
+            status: ChangelogStatus::Validate(Validate { path }),
+        }) => {
+            tasks::changelog::validate(&path);
+        }
         Task::Setup(Setup {
             server,
             private_token,

@@ -68,25 +68,27 @@ pub fn create_stub(name: &str) -> std::path::PathBuf {
 
 //------------------------------------------------------------------------------
 pub fn verify(name: &str) -> bool {
-    let path = resolve(name);
+    validate(&resolve(name))
+}
+
+//------------------------------------------------------------------------------
+pub fn validate(path: &std::path::PathBuf) -> bool {
     let change_log: Changelog = serde_yaml::from_reader(
         std::fs::File::open(
             path.to_str().expect("changelog path is not unicode"),
         )
         .expect(&format!(
-            "Unable to read change log file {}",
+            "Unable to read change log file '{}'",
             path.to_str().unwrap()
         )),
     )
     .expect(&format!(
-        "Unable to parse the change log from disk {}",
+        "Unable to parse the change log from disk '{}'",
         path.to_str().unwrap()
     ));
 
     // Make sure the change log isn't empty
-    assert!(change_log != Changelog::new());
-
-    true
+    change_log != Changelog::new()
 }
 
 //------------------------------------------------------------------------------
@@ -138,12 +140,12 @@ pub fn aggregate(tag: &str, prefix: &[&str]) {
     for changelog_file in change_logs.iter() {
         let changelog: Changelog = serde_yaml::from_reader(
             std::fs::File::open(&changelog_file).expect(&format!(
-                "Unable to open changelog file {}",
+                "Unable to open changelog file '{}'",
                 changelog_file.to_str().unwrap()
             )),
         )
         .expect(&format!(
-            "Unable to read changelog file {}",
+            "Unable to read changelog file '{}'",
             changelog_file.to_str().unwrap()
         ));
 
