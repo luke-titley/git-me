@@ -18,20 +18,20 @@ fn main() {
         // Feature
         Task::Feature(Feature { status }) => match status {
             Status::Start(Start { name, reviewer }) => {
-                tasks::feature::start(&name, &reviewer)
+                tasks::work::start(branch::Type::Feature, &name, &reviewer)
             }
-            Status::Review(Review {}) => tasks::feature::review(),
-            Status::Finish(Finish {}) => tasks::feature::finish(),
-            Status::Rebase(Rebase {}) => tasks::feature::rebase(),
-            Status::Enter(Enter {}) => tasks::feature::enter(),
-            Status::Exit(Exit {}) => tasks::feature::exit(),
-            Status::Switch(Switch {}) => tasks::feature::switch(),
-            Status::List(List {}) => tasks::feature::list(),
+            Status::Review(Review {}) => {
+                tasks::work::review(branch::Type::Feature)
+            }
         },
-        Task::Hotfix(Hotfix {
-            status: Status::Start(Start { .. }),
-        }) => {
-            println!("Not implemented");
+        // Hotfix
+        Task::Hotfix(Hotfix { status }) => match status {
+            Status::Start(Start { name, reviewer }) => {
+                tasks::work::start(branch::Type::Hotfix, &name, &reviewer)
+            }
+            Status::Review(Review {}) => {
+                tasks::work::review(branch::Type::Hotfix)
+            }
         }
         Task::Changelog(Changelog {
             status: ChangelogStatus::Aggregate(Aggregate { tag }),

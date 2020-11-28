@@ -27,11 +27,11 @@ pub enum Task {
 /// start
 #[argh(subcommand, name = "start")]
 pub struct Start {
-    #[argh(option)]
+    #[argh(option, short = 'n')]
     /// name of the new feature/hotfix
     pub name: std::string::String,
 
-    #[argh(option)]
+    #[argh(option, short = 'r')]
     /// name of the person to review your work
     pub reviewer: std::string::String,
 }
@@ -44,52 +44,10 @@ pub struct Review {}
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
-/// rebase
-#[argh(subcommand, name = "rebase")]
-pub struct Rebase {}
-
-//------------------------------------------------------------------------------
-#[derive(FromArgs, PartialEq, Debug)]
-/// finish
-#[argh(subcommand, name = "finish")]
-pub struct Finish {}
-
-//------------------------------------------------------------------------------
-#[derive(FromArgs, PartialEq, Debug)]
-/// enter
-#[argh(subcommand, name = "enter")]
-pub struct Enter {}
-
-//------------------------------------------------------------------------------
-#[derive(FromArgs, PartialEq, Debug)]
-/// exit
-#[argh(subcommand, name = "exit")]
-pub struct Exit {}
-
-//------------------------------------------------------------------------------
-#[derive(FromArgs, PartialEq, Debug)]
-/// switch
-#[argh(subcommand, name = "switch")]
-pub struct Switch {}
-
-//------------------------------------------------------------------------------
-#[derive(FromArgs, PartialEq, Debug)]
-/// list
-#[argh(subcommand, name = "list")]
-pub struct List {}
-
-//------------------------------------------------------------------------------
-#[derive(FromArgs, PartialEq, Debug)]
 #[argh(subcommand)]
 pub enum Status {
     Start(Start),
     Review(Review),
-    Finish(Finish),
-    Rebase(Rebase),
-    Enter(Enter),
-    Exit(Exit),
-    Switch(Switch),
-    List(List),
 }
 
 //------------------------------------------------------------------------------

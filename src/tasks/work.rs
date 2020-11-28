@@ -6,12 +6,12 @@ use crate::changelog;
 use crate::server;
 
 //------------------------------------------------------------------------------
-pub fn start(name: &str, reviewer: &str) {
+pub fn start(branch_type: branch::Type, name: &str, reviewer: &str) {
     // Make sure we are on the develop branch
-    if branch::find_name() != branch::base(branch::Type::Feature) {
+    if branch::find_name() != branch::base(branch_type) {
         panic!(
-            "You must start a feature branch from {}",
-            branch::base(branch::Type::Feature)
+            "You must start this new branch from {}",
+            branch::base(branch_type)
         );
     }
 
@@ -20,12 +20,12 @@ pub fn start(name: &str, reviewer: &str) {
     let assignee = server.find_user(reviewer);
 
     // Make the new branch
-    println!("    * {}", &branch::resolve(branch::Type::Feature, name));
-    branch::branch(branch::Type::Feature, name);
+    println!("    * {}", &branch::resolve(branch_type, name));
+    branch::branch(branch_type, name);
 
     // Push the new branch
     println!("    * push");
-    branch::push(&branch::resolve(branch::Type::Feature, name));
+    branch::push(&branch::resolve(branch_type, name));
 
     // Create a new merge request upfront
     println!("    * wip merge request");
@@ -33,14 +33,14 @@ pub fn start(name: &str, reviewer: &str) {
     let project = server.project(&remote_url);
     server.merge_request(
         &project,
-        branch::base(branch::Type::Feature),
-        &branch::resolve(branch::Type::Feature, name),
+        branch::base(branch_type),
+        &branch::resolve(branch_type, name),
         assignee.id,
     );
 }
 
 //------------------------------------------------------------------------------
-pub fn review() {
+pub fn review(branch_type: branch::Type) {
     let branch_name = branch::find_name();
 
     // Verify the changelog has been filled out
@@ -56,14 +56,14 @@ pub fn review() {
     // Verify that our branch is up to speed
     let mut server = server::Server::new();
     let remote_url = branch::find_remote();
-    let head_commit = server
-        .find_head_commit(&remote_url, branch::base(branch::Type::Feature));
+    let head_commit =
+        server.find_head_commit(&remote_url, branch::base(branch_type));
 
-    // Verify that your branch is rebased on top of the latest work in develop
+    // Verify that your branch is rebased on top of the latest work in base
     if !branch::verify_up_to_date(&head_commit, &branch_name) {
         panic!(
             "Your branch is not rebased on the latest {}. You need to pull and rebase",
-            branch::base(branch::Type::Feature)
+            branch::base(branch_type)
         );
     }
 
