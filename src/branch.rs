@@ -40,15 +40,27 @@ pub fn branch(type_: Type, name: &str) {
     let base = base(type_);
     let repo =
         git2::Repository::discover("./").expect("Unable to find git repo");
-    let base_oid = repo
+    let base_branch = repo
         .find_branch(base, git2::BranchType::Local)
-        .expect(&format!("Unable to find branch {}", base))
-        .get()
+        .expect(&format!("Unable to find branch {}", base));
+    let base_reference = base_branch.get();
+    let base_oid = base_reference
         .target()
         .expect("Unable to find reference target");
     let commit = repo
         .find_commit(base_oid)
         .expect("Unable to find head commit");
+
+    repo.set_head(
+        base_reference
+            .name()
+            .expect("Unable to get base branch reference name"),
+    )
+    .expect(&format!(
+        "Unable to set HEAD to point to {} before branching",
+        base
+    ));
+
     let mut branch = repo
         .branch(&branch_name, &commit, false)
         .expect("Unable to create branch");

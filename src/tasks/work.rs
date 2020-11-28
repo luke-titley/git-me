@@ -7,17 +7,11 @@ use crate::server;
 
 //------------------------------------------------------------------------------
 pub fn start(branch_type: branch::Type, name: &str, reviewer: &str) {
-    // Make sure we are on the develop branch
-    if branch::find_name() != branch::base(branch_type) {
-        panic!(
-            "You must start this new branch from {}",
-            branch::base(branch_type)
-        );
-    }
-
     // Find the user specified in reviewer
+    print!("    * does {} exist? ", reviewer);
     let mut server = server::Server::new();
     let assignee = server.find_user(reviewer);
+    println!("yes");
 
     // Make the new branch
     println!("    * {}", &branch::resolve(branch_type, name));
