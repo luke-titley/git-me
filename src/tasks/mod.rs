@@ -3,5 +3,5 @@
 //------------------------------------------------------------------------------
 
 pub mod changelog;
-pub mod work;
 pub mod setup;
+pub mod work;

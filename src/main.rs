@@ -32,7 +32,7 @@ fn main() {
             Status::Review(Review {}) => {
                 tasks::work::review(branch::Type::Hotfix)
             }
-        }
+        },
         Task::Changelog(Changelog {
             status: ChangelogStatus::Aggregate(Aggregate { tag }),
         }) => {

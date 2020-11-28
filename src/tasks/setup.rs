@@ -15,6 +15,7 @@ pub fn setup(server: &str, token: &str) {
 }
 
 pub fn info() {
+    println!("{}", config::Config::file_path());
     let config = config::Config::open();
     let server_status =
         match gitlab::Gitlab::new(&config.server, &config.private_token) {
@@ -22,6 +23,6 @@ pub fn info() {
             Err(error) => format!("{}", &error),
         };
 
-    println!("{:?}", &config);
+    println!("    {:?}", &config);
     println!("Server: {}", server_status);
 }

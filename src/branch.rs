@@ -30,7 +30,7 @@ pub fn resolve(type_: Type, name: &str) -> std::string::String {
 pub fn base(type_: Type) -> &'static str {
     match type_ {
         Type::Feature => "develop",
-        Type::Hotfix => "master",
+        Type::Hotfix => "develop", // Need to switch this to master
     }
 }
 
