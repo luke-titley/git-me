@@ -56,8 +56,12 @@ pub fn review(branch_type: branch::Type) {
     // Verify that your branch is rebased on top of the latest work in base
     if !branch::verify_up_to_date(&head_commit, &branch_name) {
         panic!(
-            "Your branch is not rebased on the latest {}. You need to pull and rebase",
-            branch::base(branch_type)
+            "Your branch is not rebased on the latest {0}. \
+             You need to pull and rebase. This is not automatic yet.\n\
+             git checkout {0} && git pull --rebase && git checkout {1} && git rebase {0} && git push -f origin {1}
+             ",
+            branch::base(branch_type),
+            branch_name
         );
     }
 

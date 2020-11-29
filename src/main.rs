@@ -25,6 +25,7 @@ fn main() {
             }
             Status::Rebase(Rebase {}) => {
                 println!("wip");
+                //println!("try: 'git checkout '");
                 //tasks::work::rebase(branch::Type::Feature)
             }
         },
