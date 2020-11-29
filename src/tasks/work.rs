@@ -64,3 +64,8 @@ pub fn review(branch_type: branch::Type) {
     // Push your work
     branch::push(&branch_name);
 }
+
+//------------------------------------------------------------------------------
+pub fn rebase(branch_type: branch::Type) {
+    branch::rebase(branch_type, &branch::find_name());
+}

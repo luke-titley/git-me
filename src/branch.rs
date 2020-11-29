@@ -102,81 +102,103 @@ pub fn branch(type_: Type, name: &str) {
     repo.checkout_head(None).expect("Reset everything to head");
 }
 
-/*
-//------------------------------------------------------------------------------
-pub fn update_all() {
-    let repo =
-        git2::Repository::discover("./").expect("Unable to find git repo");
-
-    let mut index = repo.index().expect("Unable to create index for changelog");
-    index.update_all(&["*"], None).expect("Unable to update all");
-}
-*/
-
-//------------------------------------------------------------------------------
-pub fn remove_from_index(paths: &[std::path::PathBuf]) {
-    let repo =
-        git2::Repository::discover("./").expect("Unable to find git repo");
-
-    let mut index = repo.index().expect("Unable to create index for changelog");
-    for path in paths.iter() {
-        index
-            .remove_path(path.as_path())
-            .expect(&format!("Unable to add {:?} to index", &path));
+fn find_commit(reference: &git2::Commit, commit: &git2::Commit) -> bool {
+    if commit.id() == reference.id() {
+        return true;
     }
+    for p in commit.parents() {
+        if find_commit(reference, &p) {
+            return true;
+        }
+    }
+    return false;
 }
 
 //------------------------------------------------------------------------------
-pub fn add_and_remove(
-    branch: &str,
-    comment: &str,
-    add: &[std::path::PathBuf],
-    remove: &[std::path::PathBuf],
-) {
+pub fn rebase(type_: Type, _fullname: &str) {
+    let base = base(type_);
     let repo =
         git2::Repository::discover("./").expect("Unable to find git repo");
+    let mut base_branch = repo
+        .find_branch(base, git2::BranchType::Local)
+        .expect(&format!("Unable to find branch {}", base));
 
-    let mut index = repo.index().expect("Unable to create index for changelog");
+    let base_reference = base_branch.get_mut();
 
-    // Add
-    for path in add.iter() {
-        index
-            .add_path(path.as_path())
-            .expect(&format!("Unable to add {:?} to index", &path));
-    }
+    println!("    * Switch to {}", base);
+    let base_reference_name = base_reference
+        .name()
+        .expect("Unable to get base branch reference name");
 
-    // Remove
-    for path in remove.iter() {
-        index
-            .remove_path(path.as_path())
-            .expect(&format!("Unable to add {:?} to index", &path));
-    }
+    println!("    * Fetch");
+    let mut remote = repo
+        .find_remote("origin")
+        .expect("Unable to find remote repo");
 
-    let index_oid = index.write_tree().expect("Unable to write index");
+    let mut callbacks = git2::RemoteCallbacks::new();
+    callbacks.credentials(|_url, username_from_url, _allowed_types| {
+        git2::Cred::ssh_key(
+            username_from_url.unwrap(),
+            None,
+            std::path::Path::new(&format!(
+                "{}/.ssh/id_rsa",
+                std::env::var("HOME").unwrap()
+            )),
+            None,
+        )
+    });
 
-    let tree = repo
-        .find_tree(index_oid)
-        .expect("Unable to find tree for new index");
+    remote
+        .fetch(
+            &[&base],
+            Some(git2::FetchOptions::new().remote_callbacks(callbacks)),
+            None,
+        )
+        .expect("Failed to fetch");
 
-    let base_oid = repo
-        .find_branch(branch, git2::BranchType::Local)
-        .expect(&format!("Unable to find branch {}", branch))
-        .get()
-        .target()
-        .expect("Unable to find reference target");
-    let commit = repo
-        .find_commit(base_oid)
+    let remote_reference = repo
+        .find_reference(
+            repo.branch_upstream_name(base_reference_name)
+                .expect("Unable to find upstream branch")
+                .as_str()
+                .expect("refname is not utf8"),
+        )
+        .expect("Unable to obtain remote reference");
+    let remote_commit = repo
+        .find_commit(
+            remote_reference
+                .target()
+                .expect("Unable to find reference target"),
+        )
         .expect("Unable to find head commit");
 
-    repo.commit(
-        Some("HEAD"),
-        &repo.signature().expect("Unable to obtain signature"),
-        &repo.signature().expect("Unable to obtain signature"),
-        comment,
-        &tree,
-        &[&commit],
-    )
-    .expect("Unable to make initial commit");
+    let base_commit = repo
+        .find_commit(
+            base_reference
+                .target()
+                .expect("Unable to find reference target"),
+        )
+        .expect("Unable to find head commit");
+
+    print!("    * Verify history");
+
+    // Ensure we can find the head commit of our local branch in the remote one
+    if find_commit(&base_commit, &remote_commit) {
+        println!(" ok");
+    } else {
+        println!(" failed");
+        panic!("You have local changes on {}. You've gone rogue. Get those changes pushed through a merge request.", base);
+    }
+
+    let statuses = repo.statuses(None).expect("Error getting status");
+    if !statuses.is_empty() {
+        panic!("You have un commited changes on {}.", base);
+    }
+
+    println!("    * Switching to latest {}", base);
+    base_reference
+        .set_target(remote_commit.id(), "bump base to latest")
+        .expect("error jumping base up to state of remote");
 
     repo.checkout_head(None).expect("Reset everything to head");
 }

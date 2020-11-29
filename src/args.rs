@@ -44,10 +44,17 @@ pub struct Review {}
 
 //------------------------------------------------------------------------------
 #[derive(FromArgs, PartialEq, Debug)]
+/// rebase
+#[argh(subcommand, name = "rebase")]
+pub struct Rebase {}
+
+//------------------------------------------------------------------------------
+#[derive(FromArgs, PartialEq, Debug)]
 #[argh(subcommand)]
 pub enum Status {
     Start(Start),
     Review(Review),
+    Rebase(Rebase),
 }
 
 //------------------------------------------------------------------------------

@@ -23,6 +23,10 @@ fn main() {
             Status::Review(Review {}) => {
                 tasks::work::review(branch::Type::Feature)
             }
+            Status::Rebase(Rebase {}) => {
+                println!("wip");
+                //tasks::work::rebase(branch::Type::Feature)
+            }
         },
         // Hotfix
         Task::Hotfix(Hotfix { status }) => match status {
@@ -31,6 +35,10 @@ fn main() {
             }
             Status::Review(Review {}) => {
                 tasks::work::review(branch::Type::Hotfix)
+            }
+            Status::Rebase(Rebase {}) => {
+                println!("wip");
+                //tasks::work::rebase(branch::Type::Hotfix)
             }
         },
         Task::Changelog(Changelog {
