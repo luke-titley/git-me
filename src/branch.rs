@@ -115,7 +115,62 @@ fn find_commit(reference: &git2::Commit, commit: &git2::Commit) -> bool {
 }
 
 //------------------------------------------------------------------------------
-pub fn rebase(type_: Type, _fullname: &str) {
+pub fn rebase_place_holder(type_: Type, fullname: &str) {
+    /*
+    git checkout {0} && git pull --rebase && git checkout {1} && git rebase {0} && git push -f origin {1}
+    */
+    let base = base(type_);
+
+    // git checkout base
+    std::process::Command::new("git")
+        .arg("checkout")
+        .arg(base)
+        .spawn()
+        .expect("failed to execute git checkout")
+        .wait()
+        .expect("failed to wait on git checkout");
+
+    // git pull --rebase
+    std::process::Command::new("git")
+        .arg("pull")
+        .arg("--rebase")
+        .spawn()
+        .expect("failed to execute git pull")
+        .wait()
+        .expect("failed to wait on git pull");
+
+    // git checkout branch
+    std::process::Command::new("git")
+        .arg("checkout")
+        .arg(fullname)
+        .spawn()
+        .expect(&format!("failed to execute git checkout to {}", fullname))
+        .wait()
+        .expect(&format!("failed to wait on git checkout to {}", fullname));
+
+    // git rebase develop
+    std::process::Command::new("git")
+        .arg("rebase")
+        .arg(base)
+        .spawn()
+        .expect(&format!("failed to execute git rebase {} on develop", fullname))
+        .wait()
+        .expect(&format!("failed to wait on git checkout {} on develop", fullname));
+
+    // git push -f origin {0}
+    std::process::Command::new("git")
+        .arg("push")
+        .arg("-f")
+        .arg("origin")
+        .arg(fullname)
+        .spawn()
+        .expect(&format!("failed to execute git push for {}", fullname))
+        .wait()
+        .expect(&format!("failed to wait on git push for {}", fullname));
+}
+
+//------------------------------------------------------------------------------
+pub fn rebase_not_finished(type_: Type, _fullname: &str) {
     let base = base(type_);
     let repo =
         git2::Repository::discover("./").expect("Unable to find git repo");

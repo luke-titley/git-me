@@ -38,16 +38,19 @@ pub fn review(branch_type: branch::Type) {
     let branch_name = branch::find_name();
 
     // Verify the changelog has been filled out
+    println!("    * Veryify changelog");
     if !changelog::verify(&branch_name) {
         panic!("You've not filled in your changelog");
     }
 
     // Verify there's nothing in the index
+    println!("    * Veryify all changed committed");
     if !branch::verify_index_empty() {
         panic!("You have uncommited changes");
     }
 
     // Verify that our branch is up to speed
+    println!("    * Veryify we're up to speed");
     let mut server = server::Server::new();
     let remote_url = branch::find_remote();
     let head_commit =
@@ -55,14 +58,8 @@ pub fn review(branch_type: branch::Type) {
 
     // Verify that your branch is rebased on top of the latest work in base
     if !branch::verify_up_to_date(&head_commit, &branch_name) {
-        panic!(
-            "Your branch is not rebased on the latest {0}. \
-             You need to pull and rebase. This is not automatic yet.\n\
-             git checkout {0} && git pull --rebase && git checkout {1} && git rebase {0} && git push -f origin {1}
-             ",
-            branch::base(branch_type),
-            branch_name
-        );
+        println!("        * Rebasing");
+        branch::rebase_place_holder(branch_type, &branch_name);
     }
 
     // Push your work
@@ -71,5 +68,5 @@ pub fn review(branch_type: branch::Type) {
 
 //------------------------------------------------------------------------------
 pub fn rebase(branch_type: branch::Type) {
-    branch::rebase(branch_type, &branch::find_name());
+    branch::rebase_place_holder(branch_type, &branch::find_name());
 }
